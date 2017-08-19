@@ -16,7 +16,12 @@ class App < CustomFrame
     add_route("get","/something") do
       template "home", display: "something"
     end
-        route_info = yield
+
+    set_error('404') do
+      "Hi. This is custom error from app.rb"
+    end
+    
+    route_info = yield
     route(route_info)
   end
 end

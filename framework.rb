@@ -1,6 +1,7 @@
 class CustomFrame
   def initialize
     @routes={}
+    @error_response = []
   end
   def response(status, headers, body='')
     body =  yield if block_given?
@@ -24,7 +25,7 @@ class CustomFrame
      body =  proc.call if (route[0] == method &&\
  route[1] == path)
     end
-    body = error unless body
+    return  error unless body
 
     [status, headers,[body]]
   end
@@ -34,6 +35,11 @@ class CustomFrame
   end
 
   def error
-    "The page you requested does not exist"
+     @error_response
+  end
+
+  def set_error(status, headers={})
+    error_response =  yield if block_given?
+    @error_response = [status, headers,[error_response]]
   end
 end

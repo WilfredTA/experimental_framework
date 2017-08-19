@@ -1,6 +1,0 @@
-require './app'
-require 'rack'
-require 'rack/builder'
-
-use Router.new
-run App.new
