@@ -10,11 +10,11 @@ class App < CustomFrame
   
   def call(env)
     add_route("get", "/") do
-      template "home", display: "Hello World!"
+      erb("home",{display: "Hello"}, "layout")
     end
 
     add_route("get","/something") do
-      template "home", display: "something"
+      erb "home", {display: "something"},"layout"
     end
 
     set_error('404') do

@@ -8,6 +8,20 @@ class CustomFrame
     [status, headers,[body]]
   end
 
+  def erb(filename, locals={}, layout=nil)
+    b = binding
+    use_template =  template(filename, locals)
+    if layout
+      layout =  File.expand_path("../views/#{layout}.erb",__FILE__)
+      content = File.read(layout)
+      ERB.new(content).result(b)
+    else
+      use_template
+    end
+  end
+
+
+  
   def template(filename, locals={})
     b = binding
     to_display = locals[:display]
