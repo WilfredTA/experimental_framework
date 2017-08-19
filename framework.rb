@@ -24,11 +24,16 @@ class CustomFrame
      body =  proc.call if (route[0] == method &&\
  route[1] == path)
     end
+    body = error unless body
 
     [status, headers,[body]]
   end
 
   def add_route(method, path, &block)
     @routes[[method, path]] = block
+  end
+
+  def error
+    "The page you requested does not exist"
   end
 end
