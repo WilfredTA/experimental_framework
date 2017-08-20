@@ -21,7 +21,7 @@ class App < CustomFrame
       "Hi. This is custom error from app.rb"
     end
     
-    route_info = yield
+    route_info = get_requested_route(env)
     route(route_info)
   end
 end

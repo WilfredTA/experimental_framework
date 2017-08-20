@@ -1,3 +1,8 @@
+
+require 'yaml'
+require 'rack'
+
+
 class CustomFrame
   def initialize
     @routes={}
@@ -33,16 +38,22 @@ class CustomFrame
   end
 
   # Checks if Http request matches a route in the @routes array and returns a reaponse with the body specified in the matched route. Returns  an error message ir no routes in @routes matches request.
-  def route(route_info, status='200', headers={}\
-)
+  def route(route_info, status='200')
+
+    headers ={}
     method = route_info[0]
     path = route_info[1]
     body = nil
+    
     @routes.each do |route, proc|
-     body =  proc.call if (route[0] == method &&\
- route[1] == path)
+      if (route[0] == method && route[1] == path)
+        body = proc.call
+      end
     end
+    
     return  error unless body
+    
+    
 
     [status, headers,[body]]
   end
@@ -50,6 +61,16 @@ class CustomFrame
   # Add a route to the @routes array
   def add_route(method, path, &block)
     @routes[[method, path]] = block
+  end
+
+  # Gets the http method and path from the env and returns,a convenient array containing those values. Since routes are stored in @routes and defined by a http request method and request path, this provides a convenient way to match the clients request against a route in @routes
+  def get_requested_route(env)
+    request = Rack::Request.new(env)
+    
+    http_method = request.request_method.downcase
+    path = request.path_info
+
+    [http_method, path]
   end
 
   # Returns the error response
@@ -62,4 +83,9 @@ class CustomFrame
     error_response =  yield if block_given?
     @error_response = [status, headers,[error_response]]
   end
+ # If added to the block that add_route yields to, will 
+  def redirect(status, location, headers)
+    
+  end
+    
 end
