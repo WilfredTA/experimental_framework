@@ -37,16 +37,8 @@ class CustomFrame
 
   # Checks if Http request matches a route in the @routes array 
   # and returns a response with the body specified 
-  # in the matched route. Returns  an error message 
+  # in the matched route. Returns a not found message
   # if no routes in @routes matches request.
-
-  # The below code always returns @not_found if @not_found is places after an 'else' clause:
-    # if (route[0] == http_method && route[1] == path)
-      # return response
-    # else
-      # return @not_found
-    # end
-# Always returns @not_found
 
   def route(route_info)
 
