@@ -8,8 +8,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  erubis
-  rack
+  erubis (= 2.7.0)
+  rack (= 2.0.3)
 
 BUNDLED WITH
    1.15.3

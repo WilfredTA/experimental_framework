@@ -1,4 +1,4 @@
 source "https://rubygems.org"
 
-gem "rack"
-gem "erubis"
+gem "rack", "2.0.3"
+gem "erubis", "2.7.0"
