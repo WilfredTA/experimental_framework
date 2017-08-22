@@ -1,0 +1,85 @@
+<%= locals[:player].name %> vs <%= locals[:computer].name %>
+
+<%squares = locals[:board].squares %>
+
+
+	
+<style>
+	table {
+		border: 1px solid black;
+		border-collapse: collapse;
+	}
+</style>
+
+<table width=500px height=500px>
+
+	<tr>
+		<td><%= squares[1] %>
+			<form action="/play" method="post">
+			<input type="hidden" name="1" value=<%=squares[1].marker%>>
+			<button type="submit">Mark square</button>
+			</form>
+		</td>
+
+		<td><%= squares[2] %>
+			<form action="/play" method="post">
+			<input type="hidden" name="2" value=<%=squares[2].marker%>>
+			<button type="submit">Mark square</button>
+			</form>
+		</td>
+
+		<td><%= squares[3] %>
+			<form action="/play" method="post">
+			<input type="hidden" name="3" value=<%=squares[3].marker%>>
+			<button type="submit">Mark square</button>
+			</form>
+		</td>
+	</tr>
+
+	<tr>
+		<td><%= squares[4] %>
+			<form action="/play" method="post">
+			<input type="hidden" name="4" value=<%=squares[4].marker%>>
+			<button type="submit">Mark square</button>
+			</form>
+		</td>
+
+		<td><%= squares[5] %>
+			<form action="/play" method="post">
+			<input type="hidden" name="5" value=<%=squares[5].marker%>>
+			<button type="submit">Mark square</button>
+			</form>
+		</td>
+
+		<td><%= squares[6] %>
+			<form action="/play" method="post">
+			<input type="hidden" name="6" value=<%=squares[6].marker%>>
+			<button type="submit">Mark square</button>
+			</form>
+		</td>
+	</tr>
+
+	<tr>
+		<td><%= squares[7] %>
+			<form action="/play" method="post">
+			<input type="hidden" name="7" value=<%=squares[7].marker%>>
+			<button type="submit">Mark square</button>
+			</form>
+		</td>
+
+		<td><%= squares[8] %>
+			<form action="/play" method="post">
+			<input type="hidden" name="8" value=<%=squares[8].marker%>>
+			<button type="submit">Mark square</button>
+			</form>
+		</td>
+
+		<td><%= squares[9] %>
+			<form action="/play" method="post">
+			<input type="hidden" name="9" value=<%=squares[9].marker%>>
+			<button type="submit">Mark square</button>
+			</form>
+		</td>
+	</tr>
+
+</table>
