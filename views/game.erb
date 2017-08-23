@@ -12,11 +12,6 @@
 	<h2><a href="/new_game"> Play again? </a></h2>
 	<% locals[:computer_move] = false %>
 <% end %>
-
-<%if locals[:computer_move] == true %>
-	<h2><a href="/playing"> See the computer's move</a></h2>
-	<%locals[:computer_move] = false %>
-<%end %>
 	
 <style>
 	table {

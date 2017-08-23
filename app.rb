@@ -131,7 +131,22 @@ class GameExecuter < Hatchet::CustomFrame
        erb "game", game_parts, "layout"
       end
 
-      game_parts[:computer_move] = true
+      computer_marker = @session['computer'].marker
+      squares = @session['board'].squares
+      available_squares = free_squares(squares)
+      computer_choice = available_squares.keys.sample
+
+      squares[computer_choice].mark(computer_marker)
+
+
+      # If Computer won or a tie
+
+      if result(@session['board']) && !game_parts[:result] # Negation required, otherwise code executed even if player already won
+       @session['result'] = result(@session['board'])       # Which gives the win to the computer
+       game_parts[:result] = @session['result']
+       erb "game", game_parts, "layout"
+      end
+
       erb "game", game_parts, "layout"
 
     end
