@@ -66,6 +66,8 @@ class GameExecuter < Hatchet::CustomFrame
       
     end
 
+    add_route("get", "", location: "/new_game")
+
 
     add_route("get", "/play") do
 
