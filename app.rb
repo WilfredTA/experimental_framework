@@ -133,13 +133,12 @@ class GameExecuter < Hatchet::CustomFrame
       computer_marker = @session['computer'].marker
       squares = @session['board'].squares
       available_squares = free_squares(squares)
-      computer_choice = defensive_play(@session['board'].squares).sample
+      computer_choice = available_squares.keys.sample
 
       squares[computer_choice].mark(computer_marker)
 
 
       # If Computer won or a tie
-
 
       if result(@session['board']) && !game_parts[:result] # Negation required, otherwise code executed even if player already won
        @session['result'] = result(@session['board'])       # Which gives the win to the computer
@@ -185,6 +184,8 @@ class GameExecuter < Hatchet::CustomFrame
     winner
   end
 
+  # defensive_play Sometimes raises an error by returning nil if used to make computer choice.
+  # Requires debugging
   def defensive_play(squares)
     counter = 0
     selection = squares.select{|num, square| square.unmarked?}
@@ -194,7 +195,6 @@ class GameExecuter < Hatchet::CustomFrame
         selection = squares.select{|num, square| line.include?(num) && square.unmarked?}
       end
     end
-
     selection.keys
   end
 

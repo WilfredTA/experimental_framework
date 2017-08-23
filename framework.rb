@@ -1,5 +1,3 @@
-
-require 'yaml'
 require 'rack'
 
 module Hatchet
