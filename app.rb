@@ -75,6 +75,14 @@ class GameExecuter < Hatchet::CustomFrame
     @request = Rack::Request.new(env)
     @session = @request.session
 
+    board = Board.new
+    player = Player.new("You", :human, "X")
+    computer = Player.new("Computer", :computer, "O")
+
+    @session['board'] = board unless @session['board']
+    @session['player'] = player unless @session['player']
+    @session['computer'] = computer unless @session['computer']
+
     game_parts = {:board => @session['board'],
                   :player => @session['player'],
                   :computer => @session['computer'],
@@ -86,6 +94,11 @@ class GameExecuter < Hatchet::CustomFrame
 
     add_route("get", "/", location: "/new_game") do
     
+    end
+
+    add_route("get", "/new_game") do
+      clear_board if @session['result']
+      erb "game", {board: @session['board'], player: @session['player'], computer: @session['computer']}, "layout"
     end
 
 
@@ -154,6 +167,11 @@ class GameExecuter < Hatchet::CustomFrame
     route_info = get_requested_route(env)
 
     route(route_info)
+  end
+
+
+  def clear_board
+    @session['board'] = Board.new
   end
 
   def tie?(board)
