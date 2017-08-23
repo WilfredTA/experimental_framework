@@ -28,39 +28,6 @@ require "./framework"
 
 # The following UserRouter is added to test functions as I integrate user capability into the
 # application
-class GameLoader < Hatchet::CustomFrame
-
-  def initialize(app)
-    super()
-    @app = app
-  end
-
-  def call(env)
-    @request = Rack::Request.new(env)
-    @session = @request.session
-
-    board = Board.new
-    player = Player.new("You", :human, "X")
-    computer = Player.new("Computer", :computer, "O")
-
-    @session['board'] = board unless @session['board']
-    @session['player'] = player unless @session['player']
-    @session['computer'] = computer unless @session['computer']
-
-    add_route("get", "/new_game") do
-      clear_board if @session['result']
-      erb "game", {board: @session['board'], player: @session['player'], computer: @session['computer']}, "layout"
-    end
-
-
-    route_info = get_requested_route(env)
-    route(route_info, env)
-  end
-
-  def clear_board
-    @session['board'] = Board.new
-  end
-end
 
 class GameExecuter < Hatchet::CustomFrame
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
