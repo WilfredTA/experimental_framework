@@ -2,7 +2,20 @@
 
 <%squares = locals[:board].squares %>
 
+<% if locals[:result] %>
+	<% if locals[:result] == "Player" || locals[:result] == "Computer" %>
 
+		<h1> <%= locals[:result] %> has won </h1>
+	<% elsif locals[:result] == "Tie" %>
+		<h1> You and computer have tied! </h1>
+	<% end %>
+	<h2><a href="/new_game"> Play again? </a></h2>
+<% end %>
+
+<%if locals[:computer_move] == true %>
+	<h2><a href="/playing"> See the computer's move</a></h2>
+	<%locals[:computer_move] = false %>
+<%end %>
 	
 <style>
 	table {

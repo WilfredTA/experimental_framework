@@ -57,9 +57,9 @@ module Hatchet
   # in config.ru and do NOT pass it to the app that you `run` in config.ru. 
 
 
-    def route(route_info, env=nil, array=nil)
+    def route(route_info, env=nil)
       if ((!@routes.keys.include?(route_info)) && env)
-          @app.call(env, array)
+          @app.call(env)
       else
         http_method = route_info[0]
         path = route_info[1]

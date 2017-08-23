@@ -36,20 +36,29 @@ class GameLoader < Hatchet::CustomFrame
   end
 
   def call(env)
+    @request = Rack::Request.new(env)
+    @session = @request.session
 
     board = Board.new
     player = Player.new("You", :human, "X")
     computer = Player.new("Computer", :computer, "O")
 
-    add_route("get", "/new_game") do
-      
+    @session['board'] = board unless @session['board']
+    @session['player'] = player unless @session['player']
+    @session['computer'] = computer unless @session['computer']
 
-      erb "game", {board: board, player: player, computer: computer}, "layout"
+    add_route("get", "/new_game") do
+      clear_board if @session['result']
+      erb "game", {board: @session['board'], player: @session['player'], computer: @session['computer']}, "layout"
     end
 
 
     route_info = get_requested_route(env)
-    route(route_info, env, [board, player, computer])
+    route(route_info, env)
+  end
+
+  def clear_board
+    @session['board'] = Board.new
   end
 end
 
@@ -62,19 +71,23 @@ class GameExecuter < Hatchet::CustomFrame
     super()
   end
   
-  def call(env, game_info)
+  def call(env)
+    @request = Rack::Request.new(env)
+    @session = @request.session
+
+    game_parts = {:board => @session['board'],
+                  :player => @session['player'],
+                  :computer => @session['computer'],
+                  :result => nil
+                
+    }
+
+
+
+    add_route("get", "/", location: "/new_game") do
     
-    request = Rack::Request.new(env)
-    
-
-    game_parts = {board: game_info[0], 
-                  player: game_info[1],
-                  computer: game_info[2]}
-
-
-    add_route("get", "/", location: '/new_game') do
-
     end
+
 
 
     add_route("get", "/play") do
@@ -90,30 +103,99 @@ class GameExecuter < Hatchet::CustomFrame
     # re-display board
 
     add_route("post", "/play") do
-     square_num = request.params.keys[0].to_i
-     game_parts[:board].squares[square_num].mark(game_parts[:player].marker)
 
+      square_num = @request.params.keys[0].to_i
+      player_marker = @session['player'].marker
+      computer_marker = @session['computer'].marker
       
-     erb "game", game_parts, "layout"
+
+      # Human move
+
+      @session['board'].squares[square_num].mark(player_marker)
+
+      # If human won:
+
+      if result(@session['board'])
+       @session['result'] = result(@session['board'])
+       game_parts[:result] = @session['result']
+       erb "game", game_parts, "layout"
+      end
+
+      game_parts[:computer_move] = true
+      erb "game", game_parts, "layout"
 
     end
 
+    add_route("get", "/playing") do
+
+      # Computer move
+
+      computer_marker = @session['computer'].marker
+      squares = @session['board'].squares
+      available_squares = free_squares(squares)
+      computer_choice = defensive_play(@session['board'].squares).sample
+
+      squares[computer_choice].mark(computer_marker)
+
+
+      # If Computer won or a tie
+
+
+      if result(@session['board']) && !game_parts[:result] # Negation required, otherwise code executed even if player already won
+       @session['result'] = result(@session['board'])       # Which gives the win to the computer
+       game_parts[:result] = @session['result']
+       erb "game", game_parts, "layout"
+      end
+
+      erb "game", game_parts, "layout"
+
+
+    end
 
     route_info = get_requested_route(env)
 
     route(route_info)
   end
 
+  def tie?(board)
+     free_squares(board.squares).size == 0 && winner(board) == nil
+  end
+
+  def result(board)
+    if winner(board)
+      winner(board)
+    elsif tie?(board)
+      "Tie"
+    else
+      false
+    end
+  end
+
   def winner(board)
     #return winner if there is a winner on the board, else nil
-
+    winning_marker = nil
+    winner = nil
     WINNING_LINES.each do |line|
       squares = board.squares.values_at(*line)
       if same_markers(squares) && squares_marked?(squares)
-        return squares[0].marker
+        winning_marker = squares[0].marker
+        winning_marker == "X" ? winner = "Player" : winner = "Computer"
       end
     end
-    nil
+    winner
+  end
+
+  def defensive_play(squares)
+    counter = 0
+    selection = squares.select{|num, square| square.unmarked?}
+
+    WINNING_LINES.each do |line|
+      if squares.values_at(*line).count{|square| square.human_marker?} == 2
+        selection = squares.select{|num, square| line.include?(num) && square.unmarked?}
+      end
+    end
+
+    selection.keys
   end
 
   def same_markers(squares)
@@ -131,6 +213,17 @@ class GameExecuter < Hatchet::CustomFrame
     true
   end
 
+  def free_squares(squares)
+    squares.select{|number, square| square.unmarked?}
+  end
+
+  def choose(board)
+    if two_human_squares_in_a_row(board)
+     two_human_squares_in_a_row(board)
+    else
+      board.squares.select{|number, square| square.unmarked?}.keys.sample
+    end
+  end
 end
 
 
@@ -157,21 +250,25 @@ class Board
       @squares[num] = Square.new
     end
   end
-
-  def draw
-     "Drawn board"
-  end
 end
 
 
 class Square
-  attr_accessor :marker
+  attr_reader :marker
   def initialize()
     @marker = ''
   end
 
+  def unmarked?
+    @marker == ''
+  end
+
+  def human_marker?
+    @marker == "X"
+  end
+
   def marked?
-    @marker != ''
+    unmarked? == false
   end
 
   def mark(mark)
