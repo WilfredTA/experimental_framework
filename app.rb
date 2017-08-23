@@ -59,11 +59,11 @@ class GameExecuter < Hatchet::CustomFrame
 
     add_route("get", "/new_game") do
       clear_board if @session['result']
-      erb "game", {board: @session['board'], player: @session['player'], computer: @session['computer']}, "layout"
+      erb "game", game_parts, "layout"
     end
 
     add_route("get", "/", location: "/new_game") do
-    
+      
     end
 
 
