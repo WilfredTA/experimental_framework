@@ -95,15 +95,6 @@ class GameExecuter < Hatchet::CustomFrame
       erb "game", game_parts, "layout"
     end
 
-    # need to implement:
-    # checks if spot already taken in board
-    # if yes, redirect with error
-    # else get the square number
-    # mark square number with marker
-    # re-display board
-
-
-
 
     add_route("post", "/play", location: "/playing") do
 
@@ -116,31 +107,18 @@ class GameExecuter < Hatchet::CustomFrame
 
       @session['board'].squares[square_num].mark(player_marker)
 
-      # If human won:
-
-      if result(@session['board'])
-       @session['result'] = result(@session['board'])
-       game_parts[:result] = @session['result']
-       erb "game", game_parts, "layout"
-      end
 
       erb "game", game_parts, "layout"
-
     end
-
-
 
 
     add_route("get", "/playing", location: "/players_moved") do
 
-      # Computer move
       computer_move unless result(@session['board'])
 
 
       erb "game", game_parts, "layout"
     end
-
-
 
 
     add_route("get", "/players_moved") do
@@ -152,7 +130,6 @@ class GameExecuter < Hatchet::CustomFrame
       end
 
       erb "game", game_parts, "layout"
-
     end
 
     route_info = get_requested_route(env)
@@ -164,6 +141,7 @@ class GameExecuter < Hatchet::CustomFrame
     computer_marker = @session['computer'].marker
     squares = @session['board'].squares
     available_squares = free_squares(squares)
+
     computer_choice = available_squares.keys.sample
 
     squares[computer_choice].mark(computer_marker)
@@ -201,16 +179,15 @@ class GameExecuter < Hatchet::CustomFrame
   # defensive_play. Sometimes raises an error by returning nil if used to make computer choice.
   # Requires debugging
   def defensive_play(squares)
-    counter = 0
     selection = squares.select{|num, square| square.unmarked?}
 
     WINNING_LINES.each do |line|
       if squares.values_at(*line).count{|square| square.human_marker?} == 2
-        selection = squares.select{|num, square| line.include?(num) && square.unmarked?}
+        selection = squares.select{|num, square| line.include?(num) && square.unmarked?}.keys[0]
       end
     end
 
-    selection.keys
+    selection
   end
 
   def same_markers(squares)
