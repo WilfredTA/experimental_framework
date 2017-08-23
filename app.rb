@@ -28,6 +28,39 @@ require "./framework"
 
 # The following UserRouter is added to test functions as I integrate user capability into the
 # application
+class GameLoader < Hatchet::CustomFrame
+
+  def initialize(app)
+    super()
+    @app = app
+  end
+
+  def call(env)
+    @request = Rack::Request.new(env)
+    @session = @request.session
+
+    board = Board.new
+    player = Player.new("You", :human, "X")
+    computer = Player.new("Computer", :computer, "O")
+
+    @session['board'] = board unless @session['board']
+    @session['player'] = player unless @session['player']
+    @session['computer'] = computer unless @session['computer']
+
+    add_route("get", "/new_game") do
+      clear_board if @session['result']
+      erb "game", {board: @session['board'], player: @session['player'], computer: @session['computer']}, "layout"
+    end
+
+
+    route_info = get_requested_route(env)
+    route(route_info, env)
+  end
+
+  def clear_board
+    @session['board'] = Board.new
+  end
+end
 
 class GameExecuter < Hatchet::CustomFrame
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
@@ -42,34 +75,19 @@ class GameExecuter < Hatchet::CustomFrame
     @request = Rack::Request.new(env)
     @session = @request.session
 
-    board = Board.new
-    player = Player.new("You", :human, "X")
-    computer = Player.new("Computer", :computer, "O")
-
-    @session['board'] = board unless @session['board']
-    @session['player'] = player unless @session['player']
-    @session['computer'] = computer unless @session['computer']
-
     game_parts = {:board => @session['board'],
                   :player => @session['player'],
                   :computer => @session['computer'],
-                  :result => nil      
+                  :result => nil
+                
     }
 
 
-    add_route("get", "/new_game") do
-      clear_board if @session['result']
-      erb "game", game_parts, "layout"
+
+    add_route("get", "/", location: "/new_game") do
+    
     end
 
-    add_route("get", "/") do
-     clear_board if @session['result']
-     erb "game", game_parts, "layout"
-    end
-
-    add_route("get", "", location: "/new_game") do
-
-    end
 
 
     add_route("get", "/play") do
@@ -84,7 +102,10 @@ class GameExecuter < Hatchet::CustomFrame
     # mark square number with marker
     # re-display board
 
-    add_route("post", "/play") do
+
+
+
+    add_route("post", "/play", location: "/playing") do
 
       square_num = @request.params.keys[0].to_i
       player_marker = @session['player'].marker
@@ -103,39 +124,26 @@ class GameExecuter < Hatchet::CustomFrame
        erb "game", game_parts, "layout"
       end
 
-      computer_marker = @session['computer'].marker
-      squares = @session['board'].squares
-      available_squares = free_squares(squares)
-      computer_choice = available_squares.keys.sample
-
-      squares[computer_choice].mark(computer_marker)
-
-
-      # If Computer won or a tie
-
-      if result(@session['board']) && !game_parts[:result] # Negation required, otherwise code executed even if player already won
-       @session['result'] = result(@session['board'])       # Which gives the win to the computer
-       game_parts[:result] = @session['result']
-       erb "game", game_parts, "layout"
-      end
-
       erb "game", game_parts, "layout"
 
     end
 
-    add_route("get", "/playing") do
+
+
+
+    add_route("get", "/playing", location: "/players_moved") do
 
       # Computer move
-
-      computer_marker = @session['computer'].marker
-      squares = @session['board'].squares
-      available_squares = free_squares(squares)
-      computer_choice = available_squares.keys.sample
-
-      squares[computer_choice].mark(computer_marker)
+      computer_move unless result(@session['board'])
 
 
-      # If Computer won or a tie
+      erb "game", game_parts, "layout"
+    end
+
+
+
+
+    add_route("get", "/players_moved") do
 
       if result(@session['board']) && !game_parts[:result] # Negation required, otherwise code executed even if player already won
        @session['result'] = result(@session['board'])       # Which gives the win to the computer
@@ -144,7 +152,6 @@ class GameExecuter < Hatchet::CustomFrame
       end
 
       erb "game", game_parts, "layout"
-
 
     end
 
@@ -153,10 +160,15 @@ class GameExecuter < Hatchet::CustomFrame
     route(route_info)
   end
 
+  def computer_move
+    computer_marker = @session['computer'].marker
+    squares = @session['board'].squares
+    available_squares = free_squares(squares)
+    computer_choice = available_squares.keys.sample
 
-  def clear_board
-    @session['board'] = Board.new
+    squares[computer_choice].mark(computer_marker)
   end
+
 
   def tie?(board)
      free_squares(board.squares).size == 0 && winner(board) == nil
@@ -186,7 +198,7 @@ class GameExecuter < Hatchet::CustomFrame
     winner
   end
 
-  # defensive_play Sometimes raises an error by returning nil if used to make computer choice.
+  # defensive_play. Sometimes raises an error by returning nil if used to make computer choice.
   # Requires debugging
   def defensive_play(squares)
     counter = 0
@@ -197,6 +209,7 @@ class GameExecuter < Hatchet::CustomFrame
         selection = squares.select{|num, square| line.include?(num) && square.unmarked?}
       end
     end
+
     selection.keys
   end
 
