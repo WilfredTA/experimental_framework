@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     erubis (2.7.0)
+    puma (3.9.1)
     rack (2.0.3)
 
 PLATFORMS
@@ -9,7 +10,11 @@ PLATFORMS
 
 DEPENDENCIES
   erubis (= 2.7.0)
+  puma
   rack (= 2.0.3)
+
+RUBY VERSION
+   ruby 2.4.1p111
 
 BUNDLED WITH
    1.15.3
