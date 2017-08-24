@@ -36,9 +36,10 @@ class GameLoader < Hatchet::CustomFrame
   end
 
   def call(env)
-    @request = Rack::Request.new(env)
-    @session = @request.session
-
+    @request = Rack::Request.new(env) # This is a convenient wrapper of env, by passing env to the @app below
+    @session = @request.session       # we can initialize a new request object and access the same env variable
+                                    # In the env variable is session data as well. This extracts the session data
+                                    # from the env variable
     board = Board.new
     player = Player.new("You", :human, "X")
     computer = Player.new("Computer", :computer, "O")
@@ -55,11 +56,12 @@ class GameLoader < Hatchet::CustomFrame
 #---------------------------------------------------------
 
     route_info = get_requested_route(env)
-    route(route_info, env)
-  end
-
-  def clear_board
-    @session['board'] = Board.new
+    route(route_info, env) # This is how game-loader middleware acts as middleware; the route method
+  end                         # executes @app.call(env) if env is passed into it && if
+                                # the requested route is not find in the game_loader's stored @routes
+                                  # Remember: Rack apps MUST call the app below them in the middleware stack
+  def clear_board                   # if they are to act as middleware! Otherwise how can env be passed from one app
+    @session['board'] = Board.new    # to another?
   end
 end
 
