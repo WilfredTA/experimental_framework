@@ -13,81 +13,121 @@
 <% end %>
 	
 <style>
-	table {
-		border: 1px solid black;
-		border-collapse: collapse;
+	section {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-rows: 1fr 1fr 1fr;
+		max-width: 1000px;
+		max-height: 1000px;
+		grid-column-gap: 10px;
+		grid-row-gap: 10px;
+		background-color: #0ef2f5;
 	}
+
+
+	.cell {
+		width: 200px;
+		height: 200px;
+		background-color: #3a64b9;
+		border-radius: 10%;
+		padding: 10px;
+	}
+
+	.cell:hover {
+		background-color: #4a7de5;
+	}
+
+	form {
+		display: block;
+		height: 100%;
+		width: auto;
+		margin: 0 auto;
+	}
+
+	marker {
+		font-size: 30px;
+		text-align: center;
+		color: #ffffff;
+	}
+
+
+
 </style>
 
-<table width=500px height=500px>
+<section class="board">
 
-	<tr>
-		<td><%= squares[1] %>
+	
+	<div class="cell">
+	<div class="marker"><%= squares[1] %></div>
 			<form action="/play" method="post">
-			<input type="hidden" name="1" value=<%=squares[1].marker%>>
-			<button type="submit">Mark square</button>
+				<input type="hidden" name="1" value=<%=squares[1].marker%>>
+				<input type="submit" value="" />
 			</form>
-		</td>
-
-		<td><%= squares[2] %>
+	</div>
+		
+	<div class="cell">
+	<div class="marker"><%= squares[2] %></div>
 			<form action="/play" method="post">
-			<input type="hidden" name="2" value=<%=squares[2].marker%>>
-			<button type="submit">Mark square</button>
+				<input type="hidden" name="2" value=<%=squares[2].marker%>>
+				<input type="submit" value="" />
 			</form>
-		</td>
-
-		<td><%= squares[3] %>
+		</div>
+		
+	<div class="cell">
+	<div class="marker"><%= squares[3] %></div>
 			<form action="/play" method="post">
-			<input type="hidden" name="3" value=<%=squares[3].marker%>>
-			<button type="submit">Mark square</button>
+				<input type="hidden" name="3" value=<%=squares[3].marker%>>
+				<input type="submit" value="" />
 			</form>
-		</td>
-	</tr>
+		</div>
+	
 
-	<tr>
-		<td><%= squares[4] %>
+		<div class="cell">
+		<div class="marker"><%= squares[4] %></div>
 			<form action="/play" method="post">
-			<input type="hidden" name="4" value=<%=squares[4].marker%>>
-			<button type="submit">Mark square</button>
+				<input type="hidden" name="4" value=<%=squares[4].marker%>>
+				<input type="submit" value="" />
 			</form>
-		</td>
+		</div>
 
-		<td><%= squares[5] %>
+		<div class="cell">
+		<div class="marker"><%= squares[5] %></div>
 			<form action="/play" method="post">
-			<input type="hidden" name="5" value=<%=squares[5].marker%>>
-			<button type="submit">Mark square</button>
+				<input type="hidden" name="5" value=<%=squares[5].marker%>>
+				<input type="submit" value="" />
 			</form>
-		</td>
+		</div>
+		
 
-		<td><%= squares[6] %>
+		<div class="cell">
+		<div class="marker"><%= squares[6] %></div>
 			<form action="/play" method="post">
-			<input type="hidden" name="6" value=<%=squares[6].marker%>>
-			<button type="submit">Mark square</button>
+				<input type="hidden" name="6" value=<%=squares[6].marker%>>
+				<input type="submit" value="" />
 			</form>
-		</td>
-	</tr>
-
-	<tr>
-		<td><%= squares[7] %>
+		</div>
+	
+		<div class="cell">
+		<div class="marker"><%= squares[7] %></div>
 			<form action="/play" method="post">
 			<input type="hidden" name="7" value=<%=squares[7].marker%>>
-			<button type="submit">Mark square</button>
+			<input type="submit" value="" />
 			</form>
-		</td>
-
-		<td><%= squares[8] %>
+		</div>
+	
+		<div class="cell">
+		<div class="marker"><%= squares[8] %></div>
 			<form action="/play" method="post">
-			<input type="hidden" name="8" value=<%=squares[8].marker%>>
-			<button type="submit">Mark square</button>
+				<input type="hidden" name="8" value=<%=squares[8].marker%>>
+				<input type="submit" value="" />
 			</form>
-		</td>
-
-		<td><%= squares[9] %>
+		</div>
+	
+		<div class="cell">
+		<div class="marker"><%= squares[9] %></div>
 			<form action="/play" method="post">
-			<input type="hidden" name="9" value=<%=squares[9].marker%>>
-			<button type="submit">Mark square</button>
+				<input type="hidden" name="9" value=<%=squares[9].marker%>>
+				<input type="submit" value="" />
 			</form>
-		</td>
-	</tr>
-
-</table>
+		</div>
+</section>

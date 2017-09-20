@@ -154,7 +154,7 @@ class GameExecuter < Hatchet::CustomFrame
     squares = @board.squares
     available_squares = @board.free_squares
 
-    computer_choice = available_squares.keys.sample
+    computer_choice = defensive_play(squares)
 
     squares[computer_choice].mark(computer_marker)
   end
@@ -162,16 +162,18 @@ class GameExecuter < Hatchet::CustomFrame
   # defensive_play. Sometimes raises an error by returning nil if used to make computer choice.
   # Requires debugging
 
+
   def defensive_play(squares)
     selection = squares.select{|num, square| square.unmarked?}
 
     WINNING_LINES.each do |line|
-      if squares.values_at(*line).count{|square| square.human_marker?} == 2
-        selection = squares.select{|num, square| line.include?(num) && square.unmarked?}.keys[0]
+      if ((squares.values_at(*line).count{|square| square.human_marker?} == 2) &&
+         (squares.values_at(*line).count{|square| square.unmarked?} == 1))
+          selection = squares.select{|num, square| line.include?(num) && square.unmarked?}
       end
     end
 
-    selection
+    selection.keys.first
   end
 
   def choose(board)
